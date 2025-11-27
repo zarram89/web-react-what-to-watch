@@ -1,6 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import App from './components/app/app';
+import App from './components/app/App';
+
+const Setting = {
+  PromoFilmTitle: 'The Grand Budapest Hotel',
+  PromoFilmGenre: 'Drama',
+  PromoFilmYear: 2014,
+};
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement,
@@ -8,6 +14,10 @@ const root = ReactDOM.createRoot(
 
 root.render(
   <React.StrictMode>
-    <App />
+    <App
+      promoFilmTitle={Setting.PromoFilmTitle}
+      promoFilmGenre={Setting.PromoFilmGenre}
+      promoFilmYear={Setting.PromoFilmYear}
+    />
   </React.StrictMode>,
 );
