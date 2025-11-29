@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import FilmsList from '../../components/FilmsList/FilmsList';
 import GenreList from '../../components/GenreList/GenreList';
 import ShowMoreButton from '../../components/ShowMoreButton/ShowMoreButton';
+import MyListButton from '../../components/MyListButton/MyListButton';
 import { AppRoute, AuthorizationStatus } from '../../const';
 import { AppDispatch } from '../../store';
 import { logoutAction } from '../../store/action';
@@ -12,7 +13,8 @@ import {
   getHasError,
   getAuthorizationStatus,
   getUser,
-  getFilteredFilms
+  getFilteredFilms,
+  getFavoriteCount
 } from '../../store/selectors';
 
 const FILMS_PER_STEP = 8;
@@ -31,6 +33,7 @@ function MainScreen({ promoFilmTitle, promoFilmGenre, promoFilmReleased }: MainS
   const authorizationStatus = useSelector(getAuthorizationStatus);
   const user = useSelector(getUser);
   const filteredFilms = useSelector(getFilteredFilms);
+  const favoriteCount = useSelector(getFavoriteCount);
 
   const [shownFilmsCount, setShownFilmsCount] = useState(FILMS_PER_STEP);
 
@@ -49,6 +52,9 @@ function MainScreen({ promoFilmTitle, promoFilmGenre, promoFilmReleased }: MainS
 
   const filmsToShow = filteredFilms.slice(0, shownFilmsCount);
   const hasMoreFilms = shownFilmsCount < filteredFilms.length;
+
+  // Assuming promo film is the first film in the list
+  const promoFilm = filteredFilms.length > 0 ? filteredFilms[0] : null;
 
   if (hasError) {
     return (
@@ -81,6 +87,11 @@ function MainScreen({ promoFilmTitle, promoFilmGenre, promoFilmReleased }: MainS
             {authorizationStatus === AuthorizationStatus.Auth ? (
               <>
                 <li className="user-block__item">
+                  <Link to={AppRoute.MyList} className="user-block__link">
+                    My list <span className="user-block__item-count">{favoriteCount}</span>
+                  </Link>
+                </li>
+                <li className="user-block__item">
                   <div className="user-block__avatar">
                     <img src={user?.avatarUrl || 'img/avatar.jpg'} alt="User avatar" width="63" height="63" />
                   </div>
@@ -111,18 +122,21 @@ function MainScreen({ promoFilmTitle, promoFilmGenre, promoFilmReleased }: MainS
               </p>
 
               <div className="film-card__buttons">
-                <button className="btn btn--play film-card__button" type="button">
-                  <svg viewBox="0 0 19 19" width="19" height="19">
-                    <use xlinkHref="#play-s"></use>
-                  </svg>
-                  <span>Play</span>
-                </button>
-                <button className="btn btn--list film-card__button" type="button">
-                  <svg viewBox="0 0 19 20" width="19" height="20">
-                    <use xlinkHref="#add"></use>
-                  </svg>
-                  <span>My list</span>
-                </button>
+                {promoFilm && (
+                  <Link to={`/player/${promoFilm.id}`} className="btn btn--play film-card__button">
+                    <svg viewBox="0 0 19 19" width="19" height="19">
+                      <use xlinkHref="#play-s"></use>
+                    </svg>
+                    <span>Play</span>
+                  </Link>
+                )}
+                {promoFilm && (
+                  <MyListButton
+                    filmId={promoFilm.id}
+                    isFavorite={promoFilm.isFavorite}
+                    count={favoriteCount}
+                  />
+                )}
               </div>
             </div>
           </div>

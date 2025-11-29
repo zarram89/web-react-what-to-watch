@@ -1,5 +1,5 @@
 import { useEffect, useCallback } from 'react';
-import { useParams, Link, Navigate } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../../store';
 import { fetchFilmAction, fetchSimilarFilmsAction, fetchReviewsAction, logoutAction } from '../../store/action';
@@ -7,13 +7,15 @@ import { AppRoute, AuthorizationStatus } from '../../const';
 import FilmsList from '../../components/FilmsList/FilmsList';
 import Tabs from '../../components/Tabs/Tabs';
 import Spinner from '../../components/Spinner/Spinner';
+import MyListButton from '../../components/MyListButton/MyListButton';
 import {
   getFilm,
   getSimilarFilms,
   getReviews,
   getIsFilmLoading,
   getAuthorizationStatus,
-  getUser
+  getUser,
+  getFavoriteCount
 } from '../../store/selectors';
 
 function MovieScreen(): JSX.Element {
@@ -23,9 +25,10 @@ function MovieScreen(): JSX.Element {
   const film = useSelector(getFilm);
   const similarFilms = useSelector(getSimilarFilms);
   const reviews = useSelector(getReviews);
-  const isFilmLoading = useSelector(getIsFilmLoading);
+  const isLoading = useSelector(getIsFilmLoading);
   const authorizationStatus = useSelector(getAuthorizationStatus);
   const user = useSelector(getUser);
+  const favoriteCount = useSelector(getFavoriteCount);
 
   useEffect(() => {
     if (id) {
@@ -33,19 +36,19 @@ function MovieScreen(): JSX.Element {
       dispatch(fetchSimilarFilmsAction(id));
       dispatch(fetchReviewsAction(id));
     }
-  }, [dispatch, id]);
+  }, [id, dispatch]);
 
   const handleLogout = useCallback((evt: React.MouseEvent<HTMLAnchorElement>) => {
     evt.preventDefault();
     dispatch(logoutAction());
   }, [dispatch]);
 
-  if (isFilmLoading) {
+  if (isLoading) {
     return <Spinner />;
   }
 
   if (!film) {
-    return id ? <Navigate to={AppRoute.Main} /> : <Spinner />;
+    return <Spinner />;
   }
 
   return (
@@ -70,6 +73,11 @@ function MovieScreen(): JSX.Element {
             <ul className="user-block">
               {authorizationStatus === AuthorizationStatus.Auth ? (
                 <>
+                  <li className="user-block__item">
+                    <Link to={AppRoute.MyList} className="user-block__link">
+                      My list <span className="user-block__item-count">{favoriteCount}</span>
+                    </Link>
+                  </li>
                   <li className="user-block__item">
                     <div className="user-block__avatar">
                       <img src={user?.avatarUrl || 'img/avatar.jpg'} alt="User avatar" width="63" height="63" />
@@ -96,20 +104,21 @@ function MovieScreen(): JSX.Element {
               </p>
 
               <div className="film-card__buttons">
-                <button className="btn btn--play film-card__button" type="button">
+                <Link to={`/player/${film.id}`} className="btn btn--play film-card__button">
                   <svg viewBox="0 0 19 19" width="19" height="19">
                     <use xlinkHref="#play-s"></use>
                   </svg>
                   <span>Play</span>
-                </button>
-                <button className="btn btn--list film-card__button" type="button">
-                  <svg viewBox="0 0 19 20" width="19" height="20">
-                    <use xlinkHref="#add"></use>
-                  </svg>
-                  <span>My list</span>
-                </button>
+                </Link>
+                <MyListButton
+                  filmId={film.id}
+                  isFavorite={film.isFavorite}
+                  count={favoriteCount}
+                />
                 {authorizationStatus === AuthorizationStatus.Auth && (
-                  <Link to={`/films/${film.id}/review`} className="btn film-card__button">Add review</Link>
+                  <Link to={`/films/${film.id}/review`} className="btn film-card__button">
+                    Add review
+                  </Link>
                 )}
               </div>
             </div>
