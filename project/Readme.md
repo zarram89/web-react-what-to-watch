@@ -175,3 +175,31 @@ Simplified `FilmsList` by removing placeholder mouse handlers, as the hover logi
 - Заменил статичную кнопку на условный рендеринг `{hasMoreFilms && <ShowMoreButton onClick={handleShowMore} />}`
 
 При загрузке приложения отображается максимум 8 фильмов. При клике на "Show more" показывается ещё 8 фильмов. Кнопка автоматически скрывается когда все фильмы отображены. При смене жанра счётчик сбрасывается на 8. При переходе на другие страницы и возврате компонент размонтируется и монтируется заново, что автоматически сбрасывает состояние.
+
+## Task 9 (module7-task1): Server Integration with Axios
+
+### Description
+Подключить проект к серверу, заменить тестовые данные на реальные. Настроить axios для работы с API, интегрировать redux-thunk для асинхронных операций, загружать список фильмов с сервера при старте приложения. Создать компонент спиннера для отображения процесса загрузки.
+
+### Solution
+Создал API конфигурацию:
+- `services/api.ts` - функция `createAPI()` создаёт экземпляр axios с `baseURL: 'https://10.react.htmlacademy.pro/wtw'` и `timeout: 5000`
+- `const/api-routes.ts` - enum с маршрутами API (`APIRoute.Films = '/films'`, и т.д.)
+
+ Обновил Redux store для асинхронных операций:
+- `store/index.ts` - импортировал API, настроил middleware thunk с `extraArgument: api`, экспортировал типы `RootState` и `AppDispatch`
+- `store/action.ts` - создал асинхронный thunk `fetchFilmsAction` с использованием `createAsyncThunk`, выполняет GET запрос к `/films`
+- `store/reducer.ts` - добавил `isLoading: boolean` и `hasError: boolean` в состояние, обработал три состояния thunk: `pending` (isLoading=true), `fulfilled` (сохраняет films, isLoading=false), `rejected` (hasError=true, isLoading=false)
+
+Создал компонент `Spinner`:
+- Простой компонент с текстом "Loading..."
+- Отображается по центру экрана во время загрузки
+
+Обновил компоненты приложения:
+- `App.tsx` - заменил `loadFilms(films)` на `dispatch(fetchFilmsAction())` в useEffect, добавил селектор `isLoading`, отображает `<Spinner />` во время загрузки, использует `useDispatch<AppDispatch>()` для корректной типизации
+- `index.tsx` - удалил импорт `films` из mocks, удалил проп `films` из `<App>`
+- `MainScreen.tsx` - добавил селектор `hasError`, отображает сообщение об ошибке если сервер недоступен
+
+Удалил файл `mocks/films.ts` - больше не нужен.
+
+При загрузке приложения данные загружаются с сервера. Во время загрузки отображается спиннер. Если сервер недоступен, пользователь видит информационное сообщение об ошибке.
