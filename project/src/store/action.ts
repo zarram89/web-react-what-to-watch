@@ -8,6 +8,17 @@ import { saveToken, dropToken } from '../services/api';
 
 export const changeGenre = createAction<string>('films/changeGenre');
 
+export const fetchPromoFilmAction = createAsyncThunk<
+  Film,
+  undefined,
+  {
+    extra: { api: AxiosInstance };
+  }
+>('films/fetchPromoFilm', async (_arg, { extra: { api } }) => {
+  const { data } = await api.get<Film>(APIRoute.PromoFilm);
+  return data;
+});
+
 export const fetchFilmsAction = createAsyncThunk<
   Film[],
   undefined,

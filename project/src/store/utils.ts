@@ -10,5 +10,6 @@ export const getFilmsByGenre = (films: Film[], genre: string): Film[] => {
 export const getUniqueGenres = (films: Film[]): string[] => {
   const genres = films.map((film) => film.genre);
   const uniqueGenres = Array.from(new Set(genres));
-  return ['All genres', ...uniqueGenres];
+  // Limit to maximum 9 genres + "All genres"
+  return ['All genres', ...uniqueGenres.slice(0, 9)];
 };

@@ -1,9 +1,10 @@
 import { createReducer } from '@reduxjs/toolkit';
-import { fetchFilmsAction, fetchFavoriteFilmsAction, toggleFavoriteAction } from '../action';
+import { fetchFilmsAction, fetchPromoFilmAction, fetchFavoriteFilmsAction, toggleFavoriteAction } from '../action';
 import { Film } from '../../types/film';
 
 type InitialState = {
   films: Film[];
+  promoFilm: Film | null;
   favoriteFilms: Film[];
   isLoading: boolean;
   hasError: boolean;
@@ -11,6 +12,7 @@ type InitialState = {
 
 const initialState: InitialState = {
   films: [],
+  promoFilm: null,
   favoriteFilms: [],
   isLoading: false,
   hasError: false,
@@ -29,6 +31,9 @@ export const filmsData = createReducer(initialState, (builder) => {
     .addCase(fetchFilmsAction.rejected, (state) => {
       state.isLoading = false;
       state.hasError = true;
+    })
+    .addCase(fetchPromoFilmAction.fulfilled, (state, action) => {
+      state.promoFilm = action.payload;
     })
     .addCase(fetchFavoriteFilmsAction.fulfilled, (state, action) => {
       state.favoriteFilms = action.payload;

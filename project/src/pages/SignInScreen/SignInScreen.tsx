@@ -27,6 +27,15 @@ function SignInScreen(): JSX.Element {
       return;
     }
 
+    // Validate password: must contain at least one letter and one number
+    const hasLetter = /[A-Za-z]/.test(password);
+    const hasNumber = /\d/.test(password);
+
+    if (!hasLetter || !hasNumber) {
+      setError('Password must contain at least one letter and one number');
+      return;
+    }
+
     dispatch(loginAction({ email, password }))
       .unwrap()
       .then(() => {

@@ -14,18 +14,13 @@ import {
   getAuthorizationStatus,
   getUser,
   getFilteredFilms,
-  getFavoriteCount
+  getFavoriteCount,
+  getPromoFilm
 } from '../../store/selectors';
 
 const FILMS_PER_STEP = 8;
 
-type MainScreenProps = {
-  promoFilmTitle: string;
-  promoFilmGenre: string;
-  promoFilmReleased: number;
-};
-
-function MainScreen({ promoFilmTitle, promoFilmGenre, promoFilmReleased }: MainScreenProps): JSX.Element {
+function MainScreen(): JSX.Element {
   const dispatch = useDispatch<AppDispatch>();
 
   const currentGenre = useSelector(getGenre);
@@ -34,6 +29,7 @@ function MainScreen({ promoFilmTitle, promoFilmGenre, promoFilmReleased }: MainS
   const user = useSelector(getUser);
   const filteredFilms = useSelector(getFilteredFilms);
   const favoriteCount = useSelector(getFavoriteCount);
+  const promoFilm = useSelector(getPromoFilm);
 
   const [shownFilmsCount, setShownFilmsCount] = useState(FILMS_PER_STEP);
 
@@ -53,9 +49,6 @@ function MainScreen({ promoFilmTitle, promoFilmGenre, promoFilmReleased }: MainS
   const filmsToShow = filteredFilms.slice(0, shownFilmsCount);
   const hasMoreFilms = shownFilmsCount < filteredFilms.length;
 
-  // Assuming promo film is the first film in the list
-  const promoFilm = filteredFilms.length > 0 ? filteredFilms[0] : null;
-
   if (hasError) {
     return (
       <div className="error-message">
@@ -69,7 +62,7 @@ function MainScreen({ promoFilmTitle, promoFilmGenre, promoFilmReleased }: MainS
     <>
       <section className="film-card">
         <div className="film-card__bg">
-          <img src="img/bg-the-grand-budapest-hotel.jpg" alt={promoFilmTitle} />
+          <img src={promoFilm?.backgroundImage || ''} alt={promoFilm?.name || 'Promo film'} />
         </div>
 
         <h1 className="visually-hidden">WTW</h1>
@@ -111,14 +104,14 @@ function MainScreen({ promoFilmTitle, promoFilmGenre, promoFilmReleased }: MainS
         <div className="film-card__wrap">
           <div className="film-card__info">
             <div className="film-card__poster">
-              <img src="img/the-grand-budapest-hotel-poster.jpg" alt={`${promoFilmTitle} poster`} width="218" height="327" />
+              <img src={promoFilm?.posterImage || ''} alt={`${promoFilm?.name || 'Film'} poster`} width="218" height="327" />
             </div>
 
             <div className="film-card__desc">
-              <h2 className="film-card__title">{promoFilmTitle}</h2>
+              <h2 className="film-card__title">{promoFilm?.name}</h2>
               <p className="film-card__meta">
-                <span className="film-card__genre">{promoFilmGenre}</span>
-                <span className="film-card__year">{promoFilmReleased}</span>
+                <span className="film-card__genre">{promoFilm?.genre}</span>
+                <span className="film-card__year">{promoFilm?.released}</span>
               </p>
 
               <div className="film-card__buttons">

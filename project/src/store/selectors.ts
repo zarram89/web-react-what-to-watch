@@ -11,6 +11,7 @@ export const getUser = (state: RootState) => state[NameSpace.User].user;
 
 // Films Data
 export const getFilms = (state: RootState) => state[NameSpace.Data].films;
+export const getPromoFilm = (state: RootState) => state[NameSpace.Data].promoFilm;
 export const getIsFilmsLoading = (state: RootState) => state[NameSpace.Data].isLoading;
 export const getHasError = (state: RootState) => state[NameSpace.Data].hasError;
 export const getFavoriteFilms = (state: RootState) => state[NameSpace.Data].favoriteFilms;
