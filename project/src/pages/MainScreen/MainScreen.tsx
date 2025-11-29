@@ -1,10 +1,14 @@
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import FilmsList from '../../components/FilmsList/FilmsList';
 import GenreList from '../../components/GenreList/GenreList';
+import ShowMoreButton from '../../components/ShowMoreButton/ShowMoreButton';
 import { AppRoute } from '../../const';
 import { RootState } from '../../store';
 import { getFilmsByGenre } from '../../store/utils';
+
+const FILMS_PER_STEP = 8;
 
 type MainScreenProps = {
   promoFilmTitle: string;
@@ -16,6 +20,19 @@ function MainScreen({ promoFilmTitle, promoFilmGenre, promoFilmReleased }: MainS
   const films = useSelector((state: RootState) => state.films);
   const currentGenre = useSelector((state: RootState) => state.genre);
   const filteredFilms = getFilmsByGenre(films, currentGenre);
+
+  const [shownFilmsCount, setShownFilmsCount] = useState(FILMS_PER_STEP);
+
+  useEffect(() => {
+    setShownFilmsCount(FILMS_PER_STEP);
+  }, [currentGenre]);
+
+  const handleShowMore = () => {
+    setShownFilmsCount((prevCount) => prevCount + FILMS_PER_STEP);
+  };
+
+  const filmsToShow = filteredFilms.slice(0, shownFilmsCount);
+  const hasMoreFilms = shownFilmsCount < filteredFilms.length;
 
   return (
     <>
@@ -85,11 +102,9 @@ function MainScreen({ promoFilmTitle, promoFilmGenre, promoFilmReleased }: MainS
 
           <GenreList films={films} currentGenre={currentGenre} />
 
-          <FilmsList films={filteredFilms} />
+          <FilmsList films={filmsToShow} />
 
-          <div className="catalog__more">
-            <button className="catalog__button" type="button">Show more</button>
-          </div>
+          {hasMoreFilms && <ShowMoreButton onClick={handleShowMore} />}
         </section>
 
         <footer className="page-footer">
