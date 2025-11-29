@@ -1,22 +1,49 @@
+import { useEffect } from 'react';
 import { useParams, Link, Navigate } from 'react-router-dom';
-import { Film } from '../../types/film';
-import { AppRoute } from '../../const';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../../store';
+import { fetchFilmAction, fetchSimilarFilmsAction, fetchReviewsAction, logoutAction } from '../../store/action';
+import { AppRoute, AuthorizationStatus } from '../../const';
 import FilmsList from '../../components/FilmsList/FilmsList';
 import Tabs from '../../components/Tabs/Tabs';
+import Spinner from '../../components/Spinner/Spinner';
 
-type MovieScreenProps = {
-  films: Film[];
-};
-
-function MovieScreen({ films }: MovieScreenProps): JSX.Element {
+function MovieScreen(): JSX.Element {
   const { id } = useParams();
-  const film = films.find((f) => f.id === Number(id));
+  const dispatch = useDispatch<AppDispatch>();
 
-  if (!film) {
-    return <Navigate to={AppRoute.Main} />;
+  const film = useSelector((state: RootState) => state.film);
+  const similarFilms = useSelector((state: RootState) => state.similarFilms);
+  const reviews = useSelector((state: RootState) => state.reviews);
+  const isFilmLoading = useSelector((state: RootState) => state.isFilmLoading);
+  const authorizationStatus = useSelector((state: RootState) => state.authorizationStatus);
+  const user = useSelector((state: RootState) => state.user);
+
+  useEffect(() => {
+    if (id) {
+      dispatch(fetchFilmAction(id));
+      dispatch(fetchSimilarFilmsAction(id));
+      dispatch(fetchReviewsAction(id));
+    }
+  }, [dispatch, id]);
+
+  const handleLogout = (evt: React.MouseEvent<HTMLAnchorElement>) => {
+    evt.preventDefault();
+    dispatch(logoutAction());
+  };
+
+  if (isFilmLoading) {
+    return <Spinner />;
   }
 
-  const similarFilms = films.filter((f) => f.genre === film.genre && f.id !== film.id).slice(0, 4);
+  if (!film) {
+    // If loading finished but no film, it might be 404 or initial state
+    // Ideally we should handle 404 explicitly in reducer or here
+    // For now, if no film and not loading, we can redirect or show not found
+    // But since initial state is null, we need to be careful.
+    // Let's assume if id is present and not loading and film is null, it's an error/not found
+    return id ? <Navigate to={AppRoute.Main} /> : <Spinner />;
+  }
 
   return (
     <>
@@ -38,14 +65,22 @@ function MovieScreen({ films }: MovieScreenProps): JSX.Element {
             </div>
 
             <ul className="user-block">
-              <li className="user-block__item">
-                <div className="user-block__avatar">
-                  <img src="img/avatar.jpg" alt="User avatar" width="63" height="63" />
-                </div>
-              </li>
-              <li className="user-block__item">
-                <a className="user-block__link" href="#">Sign out</a>
-              </li>
+              {authorizationStatus === AuthorizationStatus.Auth ? (
+                <>
+                  <li className="user-block__item">
+                    <div className="user-block__avatar">
+                      <img src={user?.avatarUrl || 'img/avatar.jpg'} alt="User avatar" width="63" height="63" />
+                    </div>
+                  </li>
+                  <li className="user-block__item">
+                    <Link className="user-block__link" to="/" onClick={handleLogout}>Sign out</Link>
+                  </li>
+                </>
+              ) : (
+                <li className="user-block__item">
+                  <Link className="user-block__link" to={AppRoute.SignIn}>Sign in</Link>
+                </li>
+              )}
             </ul>
           </header>
 
@@ -70,7 +105,9 @@ function MovieScreen({ films }: MovieScreenProps): JSX.Element {
                   </svg>
                   <span>My list</span>
                 </button>
-                <Link to={`/films/${film.id}/review`} className="btn film-card__button">Add review</Link>
+                {authorizationStatus === AuthorizationStatus.Auth && (
+                  <Link to={`/films/${film.id}/review`} className="btn film-card__button">Add review</Link>
+                )}
               </div>
             </div>
           </div>
@@ -83,7 +120,7 @@ function MovieScreen({ films }: MovieScreenProps): JSX.Element {
             </div>
 
             <div className="film-card__desc">
-              <Tabs film={film} />
+              <Tabs film={film} reviews={reviews} />
             </div>
           </div>
         </div>
