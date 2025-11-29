@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import FilmsList from '../../components/FilmsList/FilmsList';
 import GenreList from '../../components/GenreList/GenreList';
 import ShowMoreButton from '../../components/ShowMoreButton/ShowMoreButton';
-import { AppRoute } from '../../const';
-import { RootState } from '../../store';
+import { AppRoute, AuthorizationStatus } from '../../const';
+import { AppDispatch, RootState } from '../../store';
 import { getFilmsByGenre } from '../../store/utils';
+import { logoutAction } from '../../store/action';
 
 const FILMS_PER_STEP = 8;
 
@@ -17,9 +18,12 @@ type MainScreenProps = {
 };
 
 function MainScreen({ promoFilmTitle, promoFilmGenre, promoFilmReleased }: MainScreenProps): JSX.Element {
+  const dispatch = useDispatch<AppDispatch>();
   const films = useSelector((state: RootState) => state.films);
   const currentGenre = useSelector((state: RootState) => state.genre);
   const hasError = useSelector((state: RootState) => state.hasError);
+  const authorizationStatus = useSelector((state: RootState) => state.authorizationStatus);
+  const user = useSelector((state: RootState) => state.user);
   const filteredFilms = getFilmsByGenre(films, currentGenre);
 
   const [shownFilmsCount, setShownFilmsCount] = useState(FILMS_PER_STEP);
@@ -30,6 +34,11 @@ function MainScreen({ promoFilmTitle, promoFilmGenre, promoFilmReleased }: MainS
 
   const handleShowMore = () => {
     setShownFilmsCount((prevCount) => prevCount + FILMS_PER_STEP);
+  };
+
+  const handleLogout = (evt: React.MouseEvent<HTMLAnchorElement>) => {
+    evt.preventDefault();
+    dispatch(logoutAction());
   };
 
   const filmsToShow = filteredFilms.slice(0, shownFilmsCount);
@@ -63,14 +72,22 @@ function MainScreen({ promoFilmTitle, promoFilmGenre, promoFilmReleased }: MainS
           </div>
 
           <ul className="user-block">
-            <li className="user-block__item">
-              <div className="user-block__avatar">
-                <img src="img/avatar.jpg" alt="User avatar" width="63" height="63" />
-              </div>
-            </li>
-            <li className="user-block__item">
-              <a className="user-block__link" href="#">Sign out</a>
-            </li>
+            {authorizationStatus === AuthorizationStatus.Auth ? (
+              <>
+                <li className="user-block__item">
+                  <div className="user-block__avatar">
+                    <img src={user?.avatarUrl || 'img/avatar.jpg'} alt="User avatar" width="63" height="63" />
+                  </div>
+                </li>
+                <li className="user-block__item">
+                  <a className="user-block__link" href="#" onClick={handleLogout}>Sign out</a>
+                </li>
+              </>
+            ) : (
+              <li className="user-block__item">
+                <Link className="user-block__link" to={AppRoute.SignIn}>Sign in</Link>
+              </li>
+            )}
           </ul>
         </header>
 

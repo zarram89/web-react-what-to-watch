@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { Route, BrowserRouter, Routes } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppRoute, AuthorizationStatus } from '../../const';
+import { AppRoute } from '../../const';
 import MainScreen from '../../pages/MainScreen/MainScreen';
 import SignInScreen from '../../pages/SignInScreen/SignInScreen';
 import MyListScreen from '../../pages/MyListScreen/MyListScreen';
@@ -11,7 +11,7 @@ import PlayerScreen from '../../pages/PlayerScreen/PlayerScreen';
 import NotFoundScreen from '../../pages/NotFoundScreen/NotFoundScreen';
 import PrivateRoute from '../private-route/PrivateRoute';
 import Spinner from '../Spinner/Spinner';
-import { fetchFilmsAction } from '../../store/action';
+import { fetchFilmsAction, checkAuthAction } from '../../store/action';
 import { AppDispatch, RootState } from '../../store';
 
 type AppProps = {
@@ -27,6 +27,7 @@ function App({ promoFilmTitle, promoFilmGenre, promoFilmYear }: AppProps): JSX.E
 
   useEffect(() => {
     dispatch(fetchFilmsAction());
+    dispatch(checkAuthAction());
   }, [dispatch]);
 
   if (isLoading) {
@@ -53,7 +54,7 @@ function App({ promoFilmTitle, promoFilmGenre, promoFilmYear }: AppProps): JSX.E
         <Route
           path={AppRoute.MyList}
           element={
-            <PrivateRoute authorizationStatus={AuthorizationStatus.NoAuth}>
+            <PrivateRoute>
               <MyListScreen films={films} />
             </PrivateRoute>
           }
@@ -65,7 +66,7 @@ function App({ promoFilmTitle, promoFilmGenre, promoFilmYear }: AppProps): JSX.E
         <Route
           path={AppRoute.AddReview}
           element={
-            <PrivateRoute authorizationStatus={AuthorizationStatus.NoAuth}>
+            <PrivateRoute>
               <AddReviewScreen films={films} />
             </PrivateRoute>
           }
