@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Route, BrowserRouter, Routes } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppRoute } from '../../const';
 import MainScreen from '../../pages/MainScreen/MainScreen';
@@ -36,52 +36,50 @@ function App({ promoFilmTitle, promoFilmGenre, promoFilmYear }: AppProps): JSX.E
   }
 
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route
-          path={AppRoute.Main}
-          element={
-            <MainScreen
-              promoFilmTitle={promoFilmTitle}
-              promoFilmGenre={promoFilmGenre}
-              promoFilmReleased={promoFilmYear}
-            />
-          }
-        />
-        <Route
-          path={AppRoute.SignIn}
-          element={<SignInScreen />}
-        />
-        <Route
-          path={AppRoute.MyList}
-          element={
-            <PrivateRoute>
-              <MyListScreen />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path={AppRoute.Film}
-          element={<MovieScreen />}
-        />
-        <Route
-          path={AppRoute.AddReview}
-          element={
-            <PrivateRoute>
-              <AddReviewScreen />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path={AppRoute.Player}
-          element={<PlayerScreen films={films} />}
-        />
-        <Route
-          path="*"
-          element={<NotFoundScreen />}
-        />
-      </Routes>
-    </BrowserRouter>
+    <Routes>
+      <Route
+        path={AppRoute.Main}
+        element={
+          <MainScreen
+            promoFilmTitle={promoFilmTitle}
+            promoFilmGenre={promoFilmGenre}
+            promoFilmReleased={promoFilmYear}
+          />
+        }
+      />
+      <Route
+        path={AppRoute.SignIn}
+        element={<SignInScreen />}
+      />
+      <Route
+        path={AppRoute.MyList}
+        element={
+          <PrivateRoute>
+            <MyListScreen />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path={AppRoute.Film}
+        element={<MovieScreen />}
+      />
+      <Route
+        path={AppRoute.AddReview}
+        element={
+          <PrivateRoute>
+            <AddReviewScreen />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path={AppRoute.Player}
+        element={<PlayerScreen films={films} />}
+      />
+      <Route
+        path="*"
+        element={<NotFoundScreen />}
+      />
+    </Routes>
   );
 }
 

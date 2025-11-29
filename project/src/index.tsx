@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import { BrowserRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import App from './components/app/app';
 import { store } from './store';
@@ -17,11 +18,13 @@ const root = ReactDOM.createRoot(
 root.render(
   <React.StrictMode>
     <Provider store={store}>
-      <App
-        promoFilmTitle={Setting.promoFilmTitle}
-        promoFilmGenre={Setting.promoFilmGenre}
-        promoFilmYear={Setting.promoFilmYear}
-      />
+      <BrowserRouter>
+        <App
+          promoFilmTitle={Setting.promoFilmTitle}
+          promoFilmGenre={Setting.promoFilmGenre}
+          promoFilmYear={Setting.promoFilmYear}
+        />
+      </BrowserRouter>
     </Provider>
   </React.StrictMode>
 );
