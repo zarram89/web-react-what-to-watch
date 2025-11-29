@@ -1,60 +1,32 @@
-import SmallMovieCard from '../../components/SmallMovieCard/SmallMovieCard';
+import { Link } from 'react-router-dom';
+import FilmsList from '../../components/FilmsList/FilmsList';
+import { Film } from '../../types/film';
+import { AppRoute } from '../../const';
 
 type MainScreenProps = {
   promoFilmTitle: string;
   promoFilmGenre: string;
-  promoFilmYear: number;
+  promoFilmReleased: number;
+  films: Film[];
 };
 
-function MainScreen({ promoFilmTitle, promoFilmGenre, promoFilmYear }: MainScreenProps): JSX.Element {
+function MainScreen({ promoFilmTitle, promoFilmGenre, promoFilmReleased, films }: MainScreenProps): JSX.Element {
   return (
     <>
-      <div className="visually-hidden">
-        <svg xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink">
-          <symbol id="add" viewBox="0 0 19 20">
-            <title>+</title>
-            <desc>Created with Sketch.</desc>
-            <g id="Page-1" stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
-              <polygon id="+" fill="#EEE5B5" points="10.777832 11.2880859 10.777832 19.5527344 8.41650391 19.5527344 8.41650391 11.2880859 0.627929688 11.2880859 0.627929688 8.92675781 8.41650391 8.92675781 8.41650391 0.662109375 10.777832 0.662109375 10.777832 8.92675781 18.5664062 8.92675781 18.5664062 11.2880859"/>
-            </g>
-          </symbol>
-          <symbol id="full-screen" viewBox="0 0 27 27">
-            <path fillRule="evenodd" clipRule="evenodd" d="M23.8571 0H16V3.14286H23.8571V11H27V3.14286V0H23.8571Z" fill="#FFF9D9" fillOpacity="0.7"/>
-            <path fillRule="evenodd" clipRule="evenodd" d="M27 23.8571V16H23.8571V23.8571H16V27H23.8571H27L27 23.8571Z" fill="#FFF9D9" fillOpacity="0.7"/>
-            <path fillRule="evenodd" clipRule="evenodd" d="M0 3.14286L0 11H3.14286L3.14286 3.14286L11 3.14286V0H3.14286H0L0 3.14286Z" fill="#FFF9D9" fillOpacity="0.7"/>
-            <path fillRule="evenodd" clipRule="evenodd" d="M3.14286 27H11V23.8571H3.14286L3.14286 16H0L0 23.8571V27H3.14286Z" fill="#FFF9D9" fillOpacity="0.7"/>
-          </symbol>
-          <symbol id="in-list" viewBox="0 0 18 14">
-            <path fillRule="evenodd" clipRule="evenodd" d="M2.40513 5.35353L6.1818 8.90902L15.5807 0L18 2.80485L6.18935 14L0 8.17346L2.40513 5.35353Z" fill="#EEE5B5"/>
-          </symbol>
-          <symbol id="pause" viewBox="0 0 14 21">
-            <symbol id="play-s" viewBox="0 0 19 19">
-              <path fillRule="evenodd" clipRule="evenodd" d="M0 0L19 9.5L0 19V0Z" fill="#EEE5B5" />
-            </symbol>
-            <title>Artboard</title>
-            <desc>Created with Sketch.</desc>
-            <g id="Artboard" stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
-              <polygon id="Line" fill="#EEE5B5" fillRule="nonzero" points="0 -1.11910481e-13 4 -1.11910481e-13 4 21 0 21"/>
-              <polygon id="Line" fill="#EEE5B5" fillRule="nonzero" points="10 -1.11910481e-13 14 -1.11910481e-13 14 21 10 21"/>
-            </g>
-          </symbol>
-        </svg>
-      </div>
-
       <section className="film-card">
         <div className="film-card__bg">
-          <img src="img/bg-the-grand-budapest-hotel.jpg" alt="The Grand Budapest Hotel" />
+          <img src="img/bg-the-grand-budapest-hotel.jpg" alt={promoFilmTitle} />
         </div>
 
         <h1 className="visually-hidden">WTW</h1>
 
         <header className="page-header film-card__head">
           <div className="logo">
-            <a className="logo__link">
+            <Link to={AppRoute.Main} className="logo__link">
               <span className="logo__letter logo__letter--1">W</span>
               <span className="logo__letter logo__letter--2">T</span>
               <span className="logo__letter logo__letter--3">W</span>
-            </a>
+            </Link>
           </div>
 
           <ul className="user-block">
@@ -64,7 +36,7 @@ function MainScreen({ promoFilmTitle, promoFilmGenre, promoFilmYear }: MainScree
               </div>
             </li>
             <li className="user-block__item">
-              <a className="user-block__link">Sign out</a>
+              <a className="user-block__link" href="#">Sign out</a>
             </li>
           </ul>
         </header>
@@ -72,14 +44,14 @@ function MainScreen({ promoFilmTitle, promoFilmGenre, promoFilmYear }: MainScree
         <div className="film-card__wrap">
           <div className="film-card__info">
             <div className="film-card__poster">
-              <img src="img/the-grand-budapest-hotel-poster.jpg" alt="The Grand Budapest Hotel poster" width="218" height="327" />
+              <img src="img/the-grand-budapest-hotel-poster.jpg" alt={`${promoFilmTitle} poster`} width="218" height="327" />
             </div>
 
             <div className="film-card__desc">
               <h2 className="film-card__title">{promoFilmTitle}</h2>
               <p className="film-card__meta">
                 <span className="film-card__genre">{promoFilmGenre}</span>
-                <span className="film-card__year">{promoFilmYear}</span>
+                <span className="film-card__year">{promoFilmReleased}</span>
               </p>
 
               <div className="film-card__buttons">
@@ -138,28 +110,7 @@ function MainScreen({ promoFilmTitle, promoFilmGenre, promoFilmYear }: MainScree
             </li>
           </ul>
 
-          <div className="catalog__films-list">
-            <SmallMovieCard title="Fantastic Beasts: The Crimes of Grindelwald" posterPath="img/fantastic-beasts-the-crimes-of-grindelwald.jpg" />
-            <SmallMovieCard title="Bohemian Rhapsody" posterPath="img/bohemian-rhapsody.jpg" />
-            <SmallMovieCard title="Macbeth" posterPath="img/macbeth.jpg" />
-            <SmallMovieCard title="Aviator" posterPath="img/aviator.jpg" />
-            <SmallMovieCard title="We need to talk about Kevin" posterPath="img/we-need-to-talk-about-kevin.jpg" />
-            <SmallMovieCard title="What We Do in the Shadows" posterPath="img/what-we-do-in-the-shadows.jpg" />
-            <SmallMovieCard title="Revenant" posterPath="img/revenant.jpg" />
-            <SmallMovieCard title="Johnny English" posterPath="img/johnny-english.jpg" />
-            <SmallMovieCard title="Shutter Island" posterPath="img/shutter-island.jpg" />
-            <SmallMovieCard title="Pulp Fiction" posterPath="img/pulp-fiction.jpg" />
-            <SmallMovieCard title="No Country for Old Men" posterPath="img/no-country-for-old-men.jpg" />
-            <SmallMovieCard title="Snatch" posterPath="img/snatch.jpg" />
-            <SmallMovieCard title="Moonrise Kingdom" posterPath="img/moonrise-kingdom.jpg" />
-            <SmallMovieCard title="Seven Years in Tibet" posterPath="img/seven-years-in-tibet.jpg" />
-            <SmallMovieCard title="Midnight Special" posterPath="img/midnight-special.jpg" />
-            <SmallMovieCard title="War of the Worlds" posterPath="img/war-of-the-worlds.jpg" />
-            <SmallMovieCard title="Dardjeeling Limited" posterPath="img/dardjeeling-limited.jpg" />
-            <SmallMovieCard title="Orlando" posterPath="img/orlando.jpg" />
-            <SmallMovieCard title="Mindhunter" posterPath="img/mindhunter.jpg" />
-            <SmallMovieCard title="Midnight Special" posterPath="img/midnight-special.jpg" />
-          </div>
+          <FilmsList films={films} />
 
           <div className="catalog__more">
             <button className="catalog__button" type="button">Show more</button>
@@ -168,11 +119,11 @@ function MainScreen({ promoFilmTitle, promoFilmGenre, promoFilmYear }: MainScree
 
         <footer className="page-footer">
           <div className="logo">
-            <a className="logo__link logo__link--light">
+            <Link to={AppRoute.Main} className="logo__link logo__link--light">
               <span className="logo__letter logo__letter--1">W</span>
               <span className="logo__letter logo__letter--2">T</span>
               <span className="logo__letter logo__letter--3">W</span>
-            </a>
+            </Link>
           </div>
 
           <div className="copyright">
