@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { Route, BrowserRouter, Routes } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { AppRoute, AuthorizationStatus } from '../../const';
 import MainScreen from '../../pages/MainScreen/MainScreen';
 import SignInScreen from '../../pages/SignInScreen/SignInScreen';
@@ -10,23 +10,28 @@ import AddReviewScreen from '../../pages/AddReviewScreen/AddReviewScreen';
 import PlayerScreen from '../../pages/PlayerScreen/PlayerScreen';
 import NotFoundScreen from '../../pages/NotFoundScreen/NotFoundScreen';
 import PrivateRoute from '../private-route/PrivateRoute';
-import { loadFilms } from '../../store/action';
-
-import { Film } from '../../types/film';
+import Spinner from '../Spinner/Spinner';
+import { fetchFilmsAction } from '../../store/action';
+import { AppDispatch, RootState } from '../../store';
 
 type AppProps = {
   promoFilmTitle: string;
   promoFilmGenre: string;
   promoFilmYear: number;
-  films: Film[];
 };
 
-function App({ promoFilmTitle, promoFilmGenre, promoFilmYear, films }: AppProps): JSX.Element {
-  const dispatch = useDispatch();
+function App({ promoFilmTitle, promoFilmGenre, promoFilmYear }: AppProps): JSX.Element {
+  const dispatch = useDispatch<AppDispatch>();
+  const isLoading = useSelector((state: RootState) => state.isLoading);
+  const films = useSelector((state: RootState) => state.films);
 
   useEffect(() => {
-    dispatch(loadFilms(films));
-  }, [dispatch, films]);
+    dispatch(fetchFilmsAction());
+  }, [dispatch]);
+
+  if (isLoading) {
+    return <Spinner />;
+  }
 
   return (
     <BrowserRouter>

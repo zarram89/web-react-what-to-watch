@@ -19,6 +19,7 @@ type MainScreenProps = {
 function MainScreen({ promoFilmTitle, promoFilmGenre, promoFilmReleased }: MainScreenProps): JSX.Element {
   const films = useSelector((state: RootState) => state.films);
   const currentGenre = useSelector((state: RootState) => state.genre);
+  const hasError = useSelector((state: RootState) => state.hasError);
   const filteredFilms = getFilmsByGenre(films, currentGenre);
 
   const [shownFilmsCount, setShownFilmsCount] = useState(FILMS_PER_STEP);
@@ -33,6 +34,15 @@ function MainScreen({ promoFilmTitle, promoFilmGenre, promoFilmReleased }: MainS
 
   const filmsToShow = filteredFilms.slice(0, shownFilmsCount);
   const hasMoreFilms = shownFilmsCount < filteredFilms.length;
+
+  if (hasError) {
+    return (
+      <div className="error-message">
+        <h1>Failed to load films</h1>
+        <p>The server is currently unavailable. Please try again later.</p>
+      </div>
+    );
+  }
 
   return (
     <>
