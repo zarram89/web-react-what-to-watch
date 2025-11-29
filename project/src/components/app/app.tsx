@@ -11,23 +11,18 @@ import PlayerScreen from '../../pages/PlayerScreen/PlayerScreen';
 import NotFoundScreen from '../../pages/NotFoundScreen/NotFoundScreen';
 import PrivateRoute from '../private-route/PrivateRoute';
 import Spinner from '../Spinner/Spinner';
-import { fetchFilmsAction, checkAuthAction } from '../../store/action';
+import { fetchFilmsAction, fetchPromoFilmAction, checkAuthAction } from '../../store/action';
 import { AppDispatch } from '../../store';
 import { getIsFilmsLoading, getFilms } from '../../store/selectors';
 
-type AppProps = {
-  promoFilmTitle: string;
-  promoFilmGenre: string;
-  promoFilmYear: number;
-};
-
-function App({ promoFilmTitle, promoFilmGenre, promoFilmYear }: AppProps): JSX.Element {
+function App(): JSX.Element {
   const dispatch = useDispatch<AppDispatch>();
   const isLoading = useSelector(getIsFilmsLoading);
   const films = useSelector(getFilms);
 
   useEffect(() => {
     dispatch(fetchFilmsAction());
+    dispatch(fetchPromoFilmAction());
     dispatch(checkAuthAction());
   }, [dispatch]);
 
@@ -39,13 +34,7 @@ function App({ promoFilmTitle, promoFilmGenre, promoFilmYear }: AppProps): JSX.E
     <Routes>
       <Route
         path={AppRoute.Main}
-        element={
-          <MainScreen
-            promoFilmTitle={promoFilmTitle}
-            promoFilmGenre={promoFilmGenre}
-            promoFilmReleased={promoFilmYear}
-          />
-        }
+        element={<MainScreen />}
       />
       <Route
         path={AppRoute.SignIn}

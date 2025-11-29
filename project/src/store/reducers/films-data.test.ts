@@ -6,6 +6,7 @@ describe('filmsData reducer', () => {
   it('should return initial state when called with undefined state', () => {
     const expectedState = {
       films: [],
+      promoFilm: null,
       favoriteFilms: [],
       isLoading: false,
       hasError: false,
@@ -19,6 +20,7 @@ describe('filmsData reducer', () => {
     it('should set isLoading to true on pending', () => {
       const initialState = {
         films: [],
+        promoFilm: null,
         favoriteFilms: [],
         isLoading: false,
         hasError: false,
@@ -32,6 +34,7 @@ describe('filmsData reducer', () => {
     it('should load films and set isLoading to false on fulfilled', () => {
       const initialState = {
         films: [],
+        promoFilm: null,
         favoriteFilms: [],
         isLoading: true,
         hasError: false,
@@ -47,6 +50,7 @@ describe('filmsData reducer', () => {
     it('should set hasError to true and isLoading to false on rejected', () => {
       const initialState = {
         films: [],
+        promoFilm: null,
         favoriteFilms: [],
         isLoading: true,
         hasError: false,
@@ -62,6 +66,7 @@ describe('filmsData reducer', () => {
     it('should load favorite films on fulfilled', () => {
       const initialState = {
         films: [],
+        promoFilm: null,
         favoriteFilms: [],
         isLoading: false,
         hasError: false,
@@ -78,6 +83,7 @@ describe('filmsData reducer', () => {
       const film = makeFakeFilm();
       const initialState = {
         films: [film],
+        promoFilm: null,
         favoriteFilms: [],
         isLoading: false,
         hasError: false,
@@ -97,6 +103,7 @@ describe('filmsData reducer', () => {
       const film = { ...makeFakeFilm(), isFavorite: true };
       const initialState = {
         films: [film],
+        promoFilm: null,
         favoriteFilms: [film],
         isLoading: false,
         hasError: false,
@@ -115,6 +122,7 @@ describe('filmsData reducer', () => {
       const film = { ...makeFakeFilm(), isFavorite: true };
       const initialState = {
         films: [film],
+        promoFilm: null,
         favoriteFilms: [film],
         isLoading: false,
         hasError: false,
