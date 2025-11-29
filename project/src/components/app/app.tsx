@@ -1,5 +1,6 @@
-import React from 'react';
+import { useEffect } from 'react';
 import { Route, BrowserRouter, Routes } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 import { AppRoute, AuthorizationStatus } from '../../const';
 import MainScreen from '../../pages/MainScreen/MainScreen';
 import SignInScreen from '../../pages/SignInScreen/SignInScreen';
@@ -9,6 +10,7 @@ import AddReviewScreen from '../../pages/AddReviewScreen/AddReviewScreen';
 import PlayerScreen from '../../pages/PlayerScreen/PlayerScreen';
 import NotFoundScreen from '../../pages/NotFoundScreen/NotFoundScreen';
 import PrivateRoute from '../private-route/PrivateRoute';
+import { loadFilms } from '../../store/action';
 
 import { Film } from '../../types/film';
 
@@ -20,6 +22,12 @@ type AppProps = {
 };
 
 function App({ promoFilmTitle, promoFilmGenre, promoFilmYear, films }: AppProps): JSX.Element {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(loadFilms(films));
+  }, [dispatch, films]);
+
   return (
     <BrowserRouter>
       <Routes>
@@ -30,7 +38,6 @@ function App({ promoFilmTitle, promoFilmGenre, promoFilmYear, films }: AppProps)
               promoFilmTitle={promoFilmTitle}
               promoFilmGenre={promoFilmGenre}
               promoFilmReleased={promoFilmYear}
-              films={films}
             />
           }
         />
