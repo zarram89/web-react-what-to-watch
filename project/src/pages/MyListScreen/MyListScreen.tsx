@@ -1,14 +1,23 @@
+import { useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { Film } from '../../types/film';
 import FilmsList from '../../components/FilmsList/FilmsList';
 import { AppRoute } from '../../const';
+import { logoutAction } from '../../store/action';
+import { AppDispatch } from '../../store';
 
 type MyListScreenProps = {
   films: Film[];
 };
 
 function MyListScreen({ films }: MyListScreenProps): JSX.Element {
+  const dispatch = useDispatch<AppDispatch>();
   const favoriteFilms = films.filter((film) => film.isFavorite);
+
+  const handleLogout = (evt: React.MouseEvent<HTMLAnchorElement>) => {
+    evt.preventDefault();
+    dispatch(logoutAction());
+  };
 
   return (
     <div className="user-page">
@@ -29,7 +38,7 @@ function MyListScreen({ films }: MyListScreenProps): JSX.Element {
             </div>
           </li>
           <li className="user-block__item">
-            <a className="user-block__link" href="#">Sign out</a>
+            <Link className="user-block__link" to="/" onClick={handleLogout}>Sign out</Link>
           </li>
         </ul>
       </header>

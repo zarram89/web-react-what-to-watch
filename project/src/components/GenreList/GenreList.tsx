@@ -1,16 +1,17 @@
+import { memo, useMemo } from 'react';
 import { useDispatch } from 'react-redux';
 import { Film } from '../../types/film';
 import { changeGenre } from '../../store/action';
 import { getUniqueGenres } from '../../store/utils';
 
 type GenreListProps = {
-    films: Film[];
-    currentGenre: string;
+  films: Film[];
+  currentGenre: string;
 };
 
 function GenreList({ films, currentGenre }: GenreListProps): JSX.Element {
   const dispatch = useDispatch();
-  const genres = getUniqueGenres(films);
+  const genres = useMemo(() => getUniqueGenres(films), [films]);
 
   const handleGenreClick = (genre: string) => {
     dispatch(changeGenre(genre));
@@ -23,20 +24,18 @@ function GenreList({ films, currentGenre }: GenreListProps): JSX.Element {
           key={genre}
           className={`catalog__genres-item ${genre === currentGenre ? 'catalog__genres-item--active' : ''}`}
         >
-          <a
-            href="#"
+          <button
             className="catalog__genres-link"
-            onClick={(e) => {
-              e.preventDefault();
-              handleGenreClick(genre);
-            }}
+            type="button"
+            style={{ background: 'transparent', border: 'none', cursor: 'pointer' }}
+            onClick={() => handleGenreClick(genre)}
           >
             {genre}
-          </a>
+          </button>
         </li>
       ))}
     </ul>
   );
 }
 
-export default GenreList;
+export default memo(GenreList);

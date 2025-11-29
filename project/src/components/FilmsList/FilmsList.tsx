@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { Film } from '../../types/film';
 import SmallMovieCard from '../SmallMovieCard/SmallMovieCard';
 
@@ -18,4 +19,4 @@ function FilmsList({ films }: FilmsListProps): JSX.Element {
   );
 }
 
-export default FilmsList;
+export default memo(FilmsList);

@@ -12,9 +12,9 @@ export const fetchFilmsAction = createAsyncThunk<
   Film[],
   undefined,
   {
-    extra: AxiosInstance;
+    extra: { api: AxiosInstance };
   }
->('films/fetchFilms', async (_arg, { extra: api }) => {
+>('films/fetchFilms', async (_arg, { extra: { api } }) => {
   const { data } = await api.get<Film[]>(APIRoute.Films);
   return data;
 });
@@ -23,9 +23,9 @@ export const fetchFilmAction = createAsyncThunk<
   Film,
   string,
   {
-    extra: AxiosInstance;
+    extra: { api: AxiosInstance };
   }
->('films/fetchFilm', async (id, { extra: api }) => {
+>('films/fetchFilm', async (id, { extra: { api } }) => {
   const { data } = await api.get<Film>(`${APIRoute.Films}/${id}`);
   return data;
 });
@@ -34,9 +34,9 @@ export const fetchSimilarFilmsAction = createAsyncThunk<
   Film[],
   string,
   {
-    extra: AxiosInstance;
+    extra: { api: AxiosInstance };
   }
->('films/fetchSimilarFilms', async (id, { extra: api }) => {
+>('films/fetchSimilarFilms', async (id, { extra: { api } }) => {
   const { data } = await api.get<Film[]>(`${APIRoute.Films}/${id}/similar`);
   return data;
 });
@@ -45,9 +45,9 @@ export const fetchReviewsAction = createAsyncThunk<
   Review[],
   string,
   {
-    extra: AxiosInstance;
+    extra: { api: AxiosInstance };
   }
->('films/fetchReviews', async (id, { extra: api }) => {
+>('films/fetchReviews', async (id, { extra: { api } }) => {
   const { data } = await api.get<Review[]>(`${APIRoute.Reviews}/${id}`);
   return data;
 });
@@ -56,9 +56,9 @@ export const postReviewAction = createAsyncThunk<
   void,
   { id: string; review: ReviewData },
   {
-    extra: AxiosInstance;
+    extra: { api: AxiosInstance };
   }
->('films/postReview', async ({ id, review }, { extra: api }) => {
+>('films/postReview', async ({ id, review }, { extra: { api } }) => {
   await api.post(`${APIRoute.Reviews}/${id}`, review);
 });
 
@@ -66,9 +66,9 @@ export const checkAuthAction = createAsyncThunk<
   User,
   undefined,
   {
-    extra: AxiosInstance;
+    extra: { api: AxiosInstance };
   }
->('user/checkAuth', async (_arg, { extra: api }) => {
+>('user/checkAuth', async (_arg, { extra: { api } }) => {
   const { data } = await api.get<User>(APIRoute.Login);
   return data;
 });
@@ -77,9 +77,9 @@ export const loginAction = createAsyncThunk<
   User,
   AuthData,
   {
-    extra: AxiosInstance;
+    extra: { api: AxiosInstance };
   }
->('user/login', async ({ email, password }, { extra: api }) => {
+>('user/login', async ({ email, password }, { extra: { api } }) => {
   const { data } = await api.post<User>(APIRoute.Login, { email, password });
   saveToken(data.token);
   return data;
@@ -89,9 +89,9 @@ export const logoutAction = createAsyncThunk<
   void,
   undefined,
   {
-    extra: AxiosInstance;
+    extra: { api: AxiosInstance };
   }
->('user/logout', async (_arg, { extra: api }) => {
+>('user/logout', async (_arg, { extra: { api } }) => {
   await api.delete(APIRoute.Logout);
   dropToken();
 });

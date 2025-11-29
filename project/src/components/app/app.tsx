@@ -12,7 +12,8 @@ import NotFoundScreen from '../../pages/NotFoundScreen/NotFoundScreen';
 import PrivateRoute from '../private-route/PrivateRoute';
 import Spinner from '../Spinner/Spinner';
 import { fetchFilmsAction, checkAuthAction } from '../../store/action';
-import { AppDispatch, RootState } from '../../store';
+import { AppDispatch } from '../../store';
+import { getIsFilmsLoading, getFilms } from '../../store/selectors';
 
 type AppProps = {
   promoFilmTitle: string;
@@ -22,8 +23,8 @@ type AppProps = {
 
 function App({ promoFilmTitle, promoFilmGenre, promoFilmYear }: AppProps): JSX.Element {
   const dispatch = useDispatch<AppDispatch>();
-  const isLoading = useSelector((state: RootState) => state.isLoading);
-  const films = useSelector((state: RootState) => state.films);
+  const isLoading = useSelector(getIsFilmsLoading);
+  const films = useSelector(getFilms);
 
   useEffect(() => {
     dispatch(fetchFilmsAction());
