@@ -86,3 +86,11 @@ npm run eject
 Выполнение данной команды, `react-scripts` скопирует все конфигурационные файлы и скрипты в корень проекта. Данный процесс позволяет получить полный контроль над конфигурацией проекта.
 
 Не используйте данную команду, если не уверены как именно она работает или к какому результату приведёт ее выполнение.
+
+## Task 4: Implement Mock Data
+
+### Description
+Implement mock data for films and integrate it into the application. Create a `Film` type, populate `src/mocks/films.ts` with 8 film objects, update components to use this mock data, and ensure correct data flow and rendering.
+
+### Solution
+Created `src/types/film.ts` and `src/mocks/films.ts`. Updated `App`, `MainScreen`, `FilmsList`, `SmallMovieCard`, `MovieScreen`, `MyListScreen`, `AddReviewScreen`, and `PlayerScreen` to use the mock data. Implemented routing and navigation between pages.
