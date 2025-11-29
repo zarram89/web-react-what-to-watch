@@ -1,25 +1,29 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import { Provider } from 'react-redux';
 import App from './components/app/app';
 import { films } from './mocks/films';
+import { store } from './store';
 
 const Setting = {
-  PromoFilmTitle: 'The Grand Budapest Hotel',
-  PromoFilmGenre: 'Drama',
-  PromoFilmYear: 2014,
+  promoFilmTitle: 'The Grand Budapest Hotel',
+  promoFilmGenre: 'Drama',
+  promoFilmYear: 2014,
 };
 
 const root = ReactDOM.createRoot(
-  document.getElementById('root') as HTMLElement,
+  document.getElementById('root') as HTMLElement
 );
 
 root.render(
   <React.StrictMode>
-    <App
-      promoFilmTitle={Setting.PromoFilmTitle}
-      promoFilmGenre={Setting.PromoFilmGenre}
-      promoFilmYear={Setting.PromoFilmYear}
-      films={films}
-    />
-  </React.StrictMode>,
+    <Provider store={store}>
+      <App
+        promoFilmTitle={Setting.promoFilmTitle}
+        promoFilmGenre={Setting.promoFilmGenre}
+        promoFilmYear={Setting.promoFilmYear}
+        films={films}
+      />
+    </Provider>
+  </React.StrictMode>
 );
