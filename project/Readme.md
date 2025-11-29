@@ -87,6 +87,7 @@ npm run eject
 
 Не используйте данную команду, если не уверены как именно она работает или к какому результату приведёт ее выполнение.
 
+
 ## Task 4: Implement Mock Data
 
 ### Description
@@ -94,3 +95,19 @@ Implement mock data for films and integrate it into the application. Create a `F
 
 ### Solution
 Created `src/types/film.ts` and `src/mocks/films.ts`. Updated `App`, `MainScreen`, `FilmsList`, `SmallMovieCard`, `MovieScreen`, `MyListScreen`, `AddReviewScreen`, and `PlayerScreen` to use the mock data. Implemented routing and navigation between pages.
+
+## Task 5 (module5-task1): Video Player Component
+
+### Description
+Implement a video player component that activates after hovering over a film card for 1 second. The video player should:
+- Replace the static image with a video preview
+- Play the video without sound (muted)
+- Stop playback and return to the static image when the cursor leaves
+- Restart playback from the beginning on subsequent hovers
+
+### Solution
+Created a new `VideoPlayer` component that uses the `<video>` element with `muted` attribute. The component accepts `src`, `poster`, and `isPlaying` props and uses `useRef` to control the video element and `useEffect` to manage playback based on the `isPlaying` state.
+
+Updated `SmallMovieCard` to include hover logic using `useState` to track video playback state and `useRef` to store the hover timer. Implemented `onMouseEnter` handler that sets a 1-second timeout before starting video, and `onMouseLeave` handler that clears the timeout and stops playback.
+
+Simplified `FilmsList` by removing placeholder mouse handlers, as the hover logic is now self-contained within `SmallMovieCard`.

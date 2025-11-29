@@ -12,8 +12,6 @@ function FilmsList({ films }: FilmsListProps): JSX.Element {
         <SmallMovieCard
           key={film.id}
           film={film}
-          onMouseOver={() => void 0}
-          onMouseOut={() => void 0}
         />
       ))}
     </div>
