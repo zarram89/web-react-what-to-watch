@@ -1,15 +1,51 @@
-import { useParams, Link, Navigate } from 'react-router-dom';
+import { useEffect } from 'react';
+import { useParams, Link, Navigate, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../../store';
+import { fetchFilmAction, postReviewAction, logoutAction } from '../../store/action';
+import { AppRoute, AuthorizationStatus } from '../../const';
 import CommentSubmissionForm from '../../components/CommentSubmissionForm/CommentSubmissionForm';
-import { Film } from '../../types/film';
-import { AppRoute } from '../../const';
+import Spinner from '../../components/Spinner/Spinner';
 
-type AddReviewScreenProps = {
-  films: Film[];
-};
-
-function AddReviewScreen({ films }: AddReviewScreenProps): JSX.Element {
+function AddReviewScreen(): JSX.Element {
   const { id } = useParams();
-  const film = films.find((f) => f.id === Number(id));
+  const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
+
+  const film = useSelector((state: RootState) => state.film);
+  const isFilmLoading = useSelector((state: RootState) => state.isFilmLoading);
+  const authorizationStatus = useSelector((state: RootState) => state.authorizationStatus);
+  const user = useSelector((state: RootState) => state.user);
+
+  useEffect(() => {
+    if (id && (!film || film.id !== Number(id))) {
+      dispatch(fetchFilmAction(id));
+    }
+  }, [dispatch, id, film]);
+
+  const handleLogout = (evt: React.MouseEvent<HTMLAnchorElement>) => {
+    evt.preventDefault();
+    dispatch(logoutAction());
+  };
+
+  const handleReviewSubmit = (rating: number, comment: string) => {
+    if (id) {
+      dispatch(postReviewAction({ id, review: { rating, comment } }))
+        .unwrap()
+        .then(() => {
+          navigate(`/films/${id}`);
+        })
+        .catch(() => {
+          // Error handling can be added here
+          // eslint-disable-next-line no-console
+          console.error('Failed to post review.');
+        });
+    }
+  };
+
+  if (isFilmLoading) {
+    return <Spinner />;
+  }
 
   if (!film) {
     return <Navigate to={AppRoute.Main} />;
@@ -39,20 +75,28 @@ function AddReviewScreen({ films }: AddReviewScreenProps): JSX.Element {
                 <Link to={`/films/${film.id}`} className="breadcrumbs__link">{film.name}</Link>
               </li>
               <li className="breadcrumbs__item">
-                <a className="breadcrumbs__link" href="#">Add review</a>
+                <span className="breadcrumbs__link">Add review</span>
               </li>
             </ul>
           </nav>
 
           <ul className="user-block">
-            <li className="user-block__item">
-              <div className="user-block__avatar">
-                <img src="img/avatar.jpg" alt="User avatar" width="63" height="63" />
-              </div>
-            </li>
-            <li className="user-block__item">
-              <a className="user-block__link" href="#">Sign out</a>
-            </li>
+            {authorizationStatus === AuthorizationStatus.Auth ? (
+              <>
+                <li className="user-block__item">
+                  <div className="user-block__avatar">
+                    <img src={user?.avatarUrl || 'img/avatar.jpg'} alt="User avatar" width="63" height="63" />
+                  </div>
+                </li>
+                <li className="user-block__item">
+                  <Link className="user-block__link" to="/" onClick={handleLogout}>Sign out</Link>
+                </li>
+              </>
+            ) : (
+              <li className="user-block__item">
+                <Link className="user-block__link" to={AppRoute.SignIn}>Sign in</Link>
+              </li>
+            )}
           </ul>
         </header>
 
@@ -61,7 +105,7 @@ function AddReviewScreen({ films }: AddReviewScreenProps): JSX.Element {
         </div>
       </div>
 
-      <CommentSubmissionForm />
+      <CommentSubmissionForm onSubmit={handleReviewSubmit} />
 
     </section>
   );

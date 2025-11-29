@@ -1,6 +1,10 @@
 import { useState, ChangeEvent, FormEvent } from 'react';
 
-function CommentSubmissionForm(): JSX.Element {
+type CommentSubmissionFormProps = {
+  onSubmit: (rating: number, comment: string) => void;
+};
+
+function CommentSubmissionForm({ onSubmit }: CommentSubmissionFormProps): JSX.Element {
   const [rating, setRating] = useState(8);
   const [reviewText, setReviewText] = useState('');
 
@@ -14,7 +18,7 @@ function CommentSubmissionForm(): JSX.Element {
 
   const handleSubmit = (evt: FormEvent<HTMLFormElement>) => {
     evt.preventDefault();
-    // Logic to submit review will be added later
+    onSubmit(rating, reviewText);
   };
 
   return (

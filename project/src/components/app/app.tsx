@@ -61,13 +61,13 @@ function App({ promoFilmTitle, promoFilmGenre, promoFilmYear }: AppProps): JSX.E
         />
         <Route
           path={AppRoute.Film}
-          element={<MovieScreen films={films} />}
+          element={<MovieScreen />}
         />
         <Route
           path={AppRoute.AddReview}
           element={
             <PrivateRoute>
-              <AddReviewScreen films={films} />
+              <AddReviewScreen />
             </PrivateRoute>
           }
         />
