@@ -1,5 +1,5 @@
 import { createReducer } from '@reduxjs/toolkit';
-import { fetchFilmAction, fetchSimilarFilmsAction, fetchReviewsAction } from '../action';
+import { fetchFilmAction, fetchSimilarFilmsAction, fetchReviewsAction, toggleFavoriteAction } from '../action';
 import { Film } from '../../types/film';
 import { Review } from '../../types/review';
 
@@ -34,5 +34,10 @@ export const filmData = createReducer(initialState, (builder) => {
     })
     .addCase(fetchReviewsAction.fulfilled, (state, action) => {
       state.reviews = action.payload;
+    })
+    .addCase(toggleFavoriteAction.fulfilled, (state, action) => {
+      if (state.film && state.film.id === action.payload.id) {
+        state.film = action.payload;
+      }
     });
 });

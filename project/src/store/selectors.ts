@@ -13,6 +13,8 @@ export const getUser = (state: RootState) => state[NameSpace.User].user;
 export const getFilms = (state: RootState) => state[NameSpace.Data].films;
 export const getIsFilmsLoading = (state: RootState) => state[NameSpace.Data].isLoading;
 export const getHasError = (state: RootState) => state[NameSpace.Data].hasError;
+export const getFavoriteFilms = (state: RootState) => state[NameSpace.Data].favoriteFilms;
+export const getFavoriteCount = (state: RootState) => state[NameSpace.Data].favoriteFilms.length;
 
 // Film Data
 export const getFilm = (state: RootState) => state[NameSpace.Film].film;

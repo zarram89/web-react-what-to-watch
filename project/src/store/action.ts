@@ -95,3 +95,25 @@ export const logoutAction = createAsyncThunk<
   await api.delete(APIRoute.Logout);
   dropToken();
 });
+
+export const toggleFavoriteAction = createAsyncThunk<
+  Film,
+  { id: number; status: number },
+  {
+    extra: { api: AxiosInstance };
+  }
+>('films/toggleFavorite', async ({ id, status }, { extra: { api } }) => {
+  const { data } = await api.post<Film>(`${APIRoute.Favorite}/${id}/${status}`);
+  return data;
+});
+
+export const fetchFavoriteFilmsAction = createAsyncThunk<
+  Film[],
+  undefined,
+  {
+    extra: { api: AxiosInstance };
+  }
+>('films/fetchFavoriteFilms', async (_arg, { extra: { api } }) => {
+  const { data } = await api.get<Film[]>(APIRoute.Favorite);
+  return data;
+});

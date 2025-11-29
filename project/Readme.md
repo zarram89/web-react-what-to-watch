@@ -265,3 +265,34 @@ Simplified `FilmsList` by removing placeholder mouse handlers, as the hover logi
    - Обновил все компоненты (`MainScreen`, `MovieScreen`, `App`, `PrivateRoute`, `AddReviewScreen`) для использования новых селекторов вместо прямого доступа к `state`.
 
 Теперь приложение оптимизировано, состояние структурировано логично, а компоненты ререндерятся только при необходимости.
+
+## Task 13 (module8-task2): Video Player and My List
+
+### Description
+Реализовать полноценный видеоплеер с элементами управления и функциональность "Мой список" для добавления фильмов в избранное.
+
+### Solution
+
+1. **Video Player (`PlayerScreen`)**:
+   - Реализовал управление воспроизведением (play/pause) с помощью `useRef` и методов видео элемента.
+   - Добавил progress bar с возможностью перемотки по клику.
+   - Реализовал отображение текущего времени и оставшейся длительности в формате MM:SS.
+   - Добавил кнопку fullscreen с использованием браузерного Fullscreen API.
+   - Видео автоматически начинает воспроизведение при загрузке страницы.
+   - Кнопка Exit возвращает на страницу фильма.
+
+2. **My List Functionality**:
+   - **API Integration**: Добавил действия `toggleFavoriteAction` (POST `/favorite/{id}/{status}`) и `fetchFavoriteFilmsAction` (GET `/favorite`).
+   - **Redux**: Обновил reducers `films-data` и `film-data` для обработки избранных фильмов. Добавил `favoriteFilms` в state и селекторы `getFavoriteFilms`, `getFavoriteCount`.
+   - **MyListButton Component**: Создал переиспользуемый компонент кнопки, который:
+     - Показывает "+ MyList" для обычных фильмов и "✓ MyList" для избранных.
+     - При клике вызывает `toggleFavoriteAction`.
+     - Отображает количество избранных фильмов.
+     - Перенаправляет на Sign In, если пользователь не авторизован.
+
+3. **UI Integration**:
+   - **MainScreen**: Добавил `MyListButton` для промо-фильма (первый фильм в списке).
+   - **MovieScreen**: Добавил `MyListButton` для текущего фильма на странице деталей.
+   - **MyListScreen**: Обновил страницу для загрузки и отображения избранных фильмов из Redux вместо фильтрации из всех фильмов.
+
+Теперь приложение имеет полнофункциональный видеоплеер и пользователи могут добавлять/удалять фильмы из избранного.

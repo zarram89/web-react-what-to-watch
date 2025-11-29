@@ -1,18 +1,20 @@
-import { useDispatch } from 'react-redux';
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { Film } from '../../types/film';
 import FilmsList from '../../components/FilmsList/FilmsList';
 import { AppRoute } from '../../const';
-import { logoutAction } from '../../store/action';
+import { logoutAction, fetchFavoriteFilmsAction } from '../../store/action';
 import { AppDispatch } from '../../store';
+import { getFavoriteFilms, getFavoriteCount } from '../../store/selectors';
 
-type MyListScreenProps = {
-  films: Film[];
-};
-
-function MyListScreen({ films }: MyListScreenProps): JSX.Element {
+function MyListScreen(): JSX.Element {
   const dispatch = useDispatch<AppDispatch>();
-  const favoriteFilms = films.filter((film) => film.isFavorite);
+  const favoriteFilms = useSelector(getFavoriteFilms);
+  const favoriteCount = useSelector(getFavoriteCount);
+
+  useEffect(() => {
+    dispatch(fetchFavoriteFilmsAction());
+  }, [dispatch]);
 
   const handleLogout = (evt: React.MouseEvent<HTMLAnchorElement>) => {
     evt.preventDefault();
@@ -30,7 +32,7 @@ function MyListScreen({ films }: MyListScreenProps): JSX.Element {
           </Link>
         </div>
 
-        <h1 className="page-title user-page__title">My list <span className="user-page__film-count">{favoriteFilms.length}</span></h1>
+        <h1 className="page-title user-page__title">My list <span className="user-page__film-count">{favoriteCount}</span></h1>
         <ul className="user-block">
           <li className="user-block__item">
             <div className="user-block__avatar">

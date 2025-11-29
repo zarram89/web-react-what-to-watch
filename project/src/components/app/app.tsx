@@ -56,7 +56,7 @@ function App({ promoFilmTitle, promoFilmGenre, promoFilmYear }: AppProps): JSX.E
           path={AppRoute.MyList}
           element={
             <PrivateRoute>
-              <MyListScreen films={films} />
+              <MyListScreen />
             </PrivateRoute>
           }
         />
