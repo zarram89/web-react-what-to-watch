@@ -203,3 +203,29 @@ Simplified `FilmsList` by removing placeholder mouse handlers, as the hover logi
 Удалил файл `mocks/films.ts` - больше не нужен.
 
 При загрузке приложения данные загружаются с сервера. Во время загрузки отображается спиннер. Если сервер недоступен, пользователь видит информационное сообщение об ошибке.
+
+## Task 10 (module7-task2): Authentication System
+
+### Description
+Реализовать систему аутентификации пользователей. Добавить поле `authorizationStatus` в глобальное состояние. Реализовать асинхронные действия для проверки авторизации (`checkAuth`), входа (`login`) и выхода (`logout`). Настроить сохранение токена и его отправку с запросами. Обновить компоненты `PrivateRoute`, `MainScreen`, `SignInScreen` для работы с авторизацией.
+
+### Solution
+Обновил Redux состояние:
+- Добавил `authorizationStatus` (Auth, NoAuth, Unknown) и `user` (данные пользователя) в `store/reducer.ts`
+- Создал типы `User` и `AuthData` в `types/user.ts`
+- Реализовал асинхронные thunk-действия в `store/action.ts`:
+  - `checkAuthAction`: GET /login - проверяет текущий статус
+  - `loginAction`: POST /login - выполняет вход, сохраняет токен
+  - `logoutAction`: DELETE /logout - выполняет выход, удаляет токен
+
+Реализовал управление токенами в `services/api.ts`:
+- Функции `getToken`, `saveToken`, `dropToken` (используют localStorage)
+- Добавил interceptor к axios для автоматического добавления заголовка `X-Token` к запросам
+
+Обновил компоненты:
+- `PrivateRoute.tsx`: Подключил к Redux, проверяет `authorizationStatus`. Если статус `Unknown`, показывает спиннер. Если `NoAuth`, перенаправляет на `/login`.
+- `MainScreen.tsx`: В шапке отображает ссылку "Sign in" для гостей или аватар и кнопку "Sign out" для авторизованных пользователей. Реализовал обработчик выхода.
+- `SignInScreen.tsx`: Реализовал форму входа с валидацией (email, пароль без пробелов). При успешном входе перенаправляет на главную.
+- `App.tsx`: При монтировании диспатчит `checkAuthAction` для проверки авторизации.
+
+Теперь приложение поддерживает полный цикл авторизации: проверка при старте, вход, выход, защита приватных маршрутов (MyList, AddReview).
