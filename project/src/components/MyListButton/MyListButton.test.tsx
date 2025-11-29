@@ -1,12 +1,14 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { configureMockStore } from '@jedmao/redux-mock-store';
 import { BrowserRouter } from 'react-router-dom';
+import thunk from 'redux-thunk';
 import MyListButton from './MyListButton';
 import { AuthorizationStatus } from '../../const';
 import { NameSpace } from '../../const/name-space';
 
-const mockStore = configureMockStore();
+const middlewares = [thunk];
+const mockStore = configureMockStore(middlewares);
 
 describe('MyListButton component', () => {
   it('should render correctly when film is not favorite', () => {
@@ -65,5 +67,29 @@ describe('MyListButton component', () => {
     );
 
     expect(screen.getByRole('button')).toBeInTheDocument();
+  });
+
+  it('should dispatch toggleFavoriteAction when clicked', () => {
+    const store = mockStore({
+      [NameSpace.User]: {
+        authorizationStatus: AuthorizationStatus.Auth,
+        user: null,
+      },
+    });
+
+    render(
+      <Provider store={store}>
+        <BrowserRouter>
+          <MyListButton filmId={1} isFavorite={false} />
+        </BrowserRouter>
+      </Provider>
+    );
+
+    const button = screen.getByRole('button');
+    fireEvent.click(button);
+
+    const actions = store.getActions();
+    expect(actions).toHaveLength(1);
+    expect(actions[0].type).toContain('toggleFavorite');
   });
 });

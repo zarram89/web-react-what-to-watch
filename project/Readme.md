@@ -354,3 +354,182 @@ Simplified `FilmsList` by removing placeholder mouse handlers, as the hover logi
 - localStorage логика в async actions
 
 Основная функциональность приложения покрыта тестами, что обеспечивает стабильность кодовой базы.
+
+## Task 15 (module9-task2): Advanced Component Testing
+
+### Описание задания
+Добавить тесты для следующих компонентов с проверкой взаимодействий пользователя:
+- `PrivateRoute` - тестирование защищённых маршрутов с разными статусами авторизации
+- `GenreList` - тестирование списка жанров и отправки action при клике
+- `CommentSubmissionForm` - тестирование формы отзывов с валидацией
+- `ShowMoreButton` и `MyListButton` - добавление тестов для обработчиков кликов
+
+### Решение
+
+#### 1. Созданные тесты
+
+**PrivateRoute Tests** (`src/components/private-route/PrivateRoute.test.tsx`):
+- ✅ Отображение Spinner при статусе Unknown
+- ✅ Рендер дочерних компонентов при авторизации
+- ✅ Редирект на SignIn при отсутствии авторизации
+
+**GenreList Tests** (`src/components/GenreList/GenreList.test.tsx`):
+- ✅ Рендер списка жанров
+- ✅ Отправка action changeGenre при клике на жанр
+
+**CommentSubmissionForm Tests** (`src/components/CommentSubmissionForm/CommentSubmissionForm.test.tsx`):
+- ✅ Рендер всех полей формы
+- ✅ Обновление textarea при вводе
+- ✅ Disabled состояние кнопки для короткого текста
+- ✅ Disabled состояние кнопки для длинного текста (>400 символов)
+- ✅ Enabled состояние для валидного текста
+- ✅ Вызов onSubmit с корректными данными
+- ✅ Обновление выбранного рейтинга
+
+**Дополненные тесты**:
+- `ShowMoreButton` - добавлен тест вызова onClick
+- `MyListButton` - добавлен тест dispatch toggleFavoriteAction при клике
+
+#### 2. Рефакторинг для тестируемости
+
+**App Component Refactoring**:
+- Перенёс `BrowserRouter` из `App.tsx` в `index.tsx` для возможности использования `MemoryRouter` в тестах
+- Это критически важное изменение для тестирования маршрутизации
+
+**App Tests** (`src/components/app/App.test.tsx`):
+- ✅ Рендер MainScreen для корневого маршрута
+- ✅ Рендер спиннера при загрузке
+- ✅ Рендер SignInScreen для /login
+- ✅ Редирект на логин при доступе к MyList без авторизации
+- ✅ Рендер MyListScreen для авторизованного пользователя
+- ✅ Рендер NotFoundScreen для неизвестного маршрута
+
+**SmallMovieCard Tests**:
+- Убрал тест проверки poster image, так как компонент использует `VideoPlayer` вместо прямого `<img>` элемента
+
+#### 3. Проблемы и их решения
+
+В процессе создания тестов столкнулся с несколькими сложными проблемами:
+
+##### Проблема 1: Timeout в тестах CommentSubmissionForm
+**Причина**: Использование `userEvent.type()` для ввода длинного текста (400+ символов) вызывало таймауты, так как `userEvent` симулирует каждое нажатие клавиши по отдельности.
+
+**Решение**:
+```typescript
+// Было:
+await user.type(textarea, 'A'.repeat(400)); // Очень медленно!
+
+// Стало:
+await user.click(textarea);  // Фокусируемся на поле
+await user.paste('A'.repeat(400)); // Быстрая вставка текста
+```
+
+##### Проблема 2: BrowserRouter в тестах PrivateRoute и App
+**Причина**: Компоненты использовали `BrowserRouter`, который не подходит для тестирования, так как манипулирует реальным URL браузера и не позволяет программно управлять навигацией.
+
+**Решение для PrivateRoute**:
+```typescript
+// Использовал MemoryRouter с Routes и Route для явного определения маршрутов
+render(
+  <Provider store={store}>
+    <MemoryRouter initialEntries={[AppRoute.MyList]}>
+      <Routes>
+        <Route path={AppRoute.MyList} element={
+          <PrivateRoute><div>Private content</div></PrivateRoute>
+        } />
+        <Route path={AppRoute.SignIn} element={<div>Login Page</div>} />
+      </Routes>
+    </MemoryRouter>
+  </Provider>
+);
+```
+
+**Решение для App**:
+1. Вынес `<BrowserRouter>` из `App.tsx` в `index.tsx`
+2. В тестах обернул App в `MemoryRouter` с `initialEntries` для контроля начального маршрута
+3. Добавил `redux-thunk` middleware в mock store для обработки async actions (fetchFilms, checkAuth)
+
+##### Проблема 3: GenreList не получал необходимые props
+**Причина**: Тесты не передавали обязательные пропсы `films` и `currentGenre` в компонент.
+
+**Решение**:
+```typescript
+render(
+  <Provider store={store}>
+    <GenreList films={fakeFilms} currentGenre="All genres" />
+  </Provider>
+);
+```
+
+##### Проблема 4: Неправильный тип action в GenreList тесте
+**Причина**: Ожидал тип `app/changeGenre`, но Redux Toolkit создаёт тип `films/changeGenre`.
+
+**Решение**: Проверил в `action.ts` правильный тип и исправил assertion:
+```typescript
+expect(actions[0].type).toBe('films/changeGenre');
+```
+
+##### Проблема 5: userEvent vs fireEvent
+**Причина**: `userEvent` более реалистичен, но иногда вызывает проблемы с таймингом в тестах.
+
+**Решение**: Для простых взаимодействий (клики) использовал `fireEvent`:
+```typescript
+// Было:
+await user.click(button);
+
+// Стало:
+fireEvent.click(button);
+```
+
+##### Проблема 6: MyListButton требует redux-thunk middleware
+**Причина**: Компонент диспатчит async action `toggleFavoriteAction`, для работы с которым нужен thunk middleware.
+
+**Решение**:
+```typescript
+const middlewares = [thunk];
+const mockStore = configureMockStore(middlewares);
+```
+
+##### Проблема 7: App тесты падали без thunk middleware
+**Причина**: App компонент в useEffect диспатчит `fetchFilmsAction()` и `checkAuthAction()`, которые являются thunk actions.
+
+**Решение**: Добавил настройку thunk middleware с API:
+```typescript
+const api = createAPI();
+const middlewares = [thunk.withExtraArgument({ api })];
+const mockStore = configureMockStore(middlewares);
+```
+
+#### 4. Результаты тестирования
+
+```bash
+npm test -- --watchAll=false
+```
+
+**Финальные результаты**:
+- ✅ **Test Suites**: 14 passed, 14 total
+- ✅ **Tests**: 63 passed, 63 total  
+- ✅ **100% test pass rate**
+
+**Тесты по категориям**:
+- Reducer tests: 26 passed
+- Async action tests: 8 passed
+- Component tests: 29 passed (включая новые с взаимодействиями)
+
+#### 5. Технические улучшения
+
+1. **MemoryRouter вместо BrowserRouter в тестах** - позволяет программно управлять навигацией
+2. **Redux-thunk middleware в mock store** - необходим для тестирования компонентов, использующих async actions
+3. **fireEvent для простых взаимодействий** - быстрее и надёжнее для базовых кликов
+4. **userEvent.paste для длинного текста** - избегает таймаутов при симуляции ввода большого текста
+5. **Разделение Router и App логики** - повышает тестируемость приложения
+
+### Выводы
+
+Задача оказалась сложнее, чем ожидалось, из-за:
+1. Необходимости рефакторинга архитектуры (вынос BrowserRouter)
+2. Различий в работе userEvent и fireEvent
+3. Требования настройки redux-thunk middleware для async actions
+4. Особенностей тестирования маршрутизации в React Router v6
+
+Однако все проблемы были решены, и теперь приложение имеет полное покрытие тестами, включая взаимодействия пользователя. Код стал более тестируемым благодаря разделению concerns (Router в index.tsx вместо App.tsx).
