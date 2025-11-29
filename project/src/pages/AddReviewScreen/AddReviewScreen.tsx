@@ -1,21 +1,27 @@
 import { useEffect } from 'react';
 import { useParams, Link, Navigate, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '../../store';
+import { AppDispatch } from '../../store';
 import { fetchFilmAction, postReviewAction, logoutAction } from '../../store/action';
 import { AppRoute, AuthorizationStatus } from '../../const';
 import CommentSubmissionForm from '../../components/CommentSubmissionForm/CommentSubmissionForm';
 import Spinner from '../../components/Spinner/Spinner';
+import {
+  getFilm,
+  getIsFilmLoading,
+  getAuthorizationStatus,
+  getUser
+} from '../../store/selectors';
 
 function AddReviewScreen(): JSX.Element {
   const { id } = useParams();
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
 
-  const film = useSelector((state: RootState) => state.film);
-  const isFilmLoading = useSelector((state: RootState) => state.isFilmLoading);
-  const authorizationStatus = useSelector((state: RootState) => state.authorizationStatus);
-  const user = useSelector((state: RootState) => state.user);
+  const film = useSelector(getFilm);
+  const isFilmLoading = useSelector(getIsFilmLoading);
+  const authorizationStatus = useSelector(getAuthorizationStatus);
+  const user = useSelector(getUser);
 
   useEffect(() => {
     if (id && (!film || film.id !== Number(id))) {

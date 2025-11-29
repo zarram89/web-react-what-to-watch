@@ -244,4 +244,24 @@ Simplified `FilmsList` by removing placeholder mouse handlers, as the hover logi
 - `AddReviewScreen.tsx`: Реализовал логику отправки отзыва через `postReviewAction`. При успехе перенаправляет на страницу фильма.
 - `CommentSubmissionForm.tsx`: Принимает колбэк `onSubmit` для отправки данных формы.
 
-Теперь страница фильма полностью функциональна, отображает реальные данные и позволяет оставлять отзывы.
+## Task 12 (module8-task1): Optimization
+
+### Description
+Оптимизировать производительность приложения, используя инструменты разработчика React и Redux. Разбить редьюсер на отдельные слайсы. Использовать `React.memo`, `useCallback` и мемоизированные селекторы.
+
+### Solution
+1. **Redux Refactoring**:
+   - Разделил корневой редьюсер на 4 слайса: `app-process` (жанр), `user-process` (авторизация), `films-data` (список фильмов), `film-data` (детали фильма).
+   - Создал `rootReducer` с использованием `combineReducers`.
+   - Создал перечисление `NameSpace` для имен слайсов.
+
+2. **Selectors**:
+   - Создал файл `store/selectors.ts` с селекторами для всех полей состояния.
+   - Реализовал мемоизированный селектор `getFilteredFilms` с помощью `createSelector` для фильтрации фильмов по жанру без лишних вычислений.
+
+3. **Component Optimization**:
+   - Обернул компоненты `FilmsList`, `SmallMovieCard`, `GenreList` в `React.memo` для предотвращения лишних ререндеров.
+   - Использовал `useCallback` для обработчиков событий в `MainScreen` и `MovieScreen`.
+   - Обновил все компоненты (`MainScreen`, `MovieScreen`, `App`, `PrivateRoute`, `AddReviewScreen`) для использования новых селекторов вместо прямого доступа к `state`.
+
+Теперь приложение оптимизировано, состояние структурировано логично, а компоненты ререндерятся только при необходимости.

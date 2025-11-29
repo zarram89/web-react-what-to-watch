@@ -1,23 +1,31 @@
-import { useEffect } from 'react';
+import { useEffect, useCallback } from 'react';
 import { useParams, Link, Navigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '../../store';
+import { AppDispatch } from '../../store';
 import { fetchFilmAction, fetchSimilarFilmsAction, fetchReviewsAction, logoutAction } from '../../store/action';
 import { AppRoute, AuthorizationStatus } from '../../const';
 import FilmsList from '../../components/FilmsList/FilmsList';
 import Tabs from '../../components/Tabs/Tabs';
 import Spinner from '../../components/Spinner/Spinner';
+import {
+  getFilm,
+  getSimilarFilms,
+  getReviews,
+  getIsFilmLoading,
+  getAuthorizationStatus,
+  getUser
+} from '../../store/selectors';
 
 function MovieScreen(): JSX.Element {
   const { id } = useParams();
   const dispatch = useDispatch<AppDispatch>();
 
-  const film = useSelector((state: RootState) => state.film);
-  const similarFilms = useSelector((state: RootState) => state.similarFilms);
-  const reviews = useSelector((state: RootState) => state.reviews);
-  const isFilmLoading = useSelector((state: RootState) => state.isFilmLoading);
-  const authorizationStatus = useSelector((state: RootState) => state.authorizationStatus);
-  const user = useSelector((state: RootState) => state.user);
+  const film = useSelector(getFilm);
+  const similarFilms = useSelector(getSimilarFilms);
+  const reviews = useSelector(getReviews);
+  const isFilmLoading = useSelector(getIsFilmLoading);
+  const authorizationStatus = useSelector(getAuthorizationStatus);
+  const user = useSelector(getUser);
 
   useEffect(() => {
     if (id) {
@@ -27,21 +35,16 @@ function MovieScreen(): JSX.Element {
     }
   }, [dispatch, id]);
 
-  const handleLogout = (evt: React.MouseEvent<HTMLAnchorElement>) => {
+  const handleLogout = useCallback((evt: React.MouseEvent<HTMLAnchorElement>) => {
     evt.preventDefault();
     dispatch(logoutAction());
-  };
+  }, [dispatch]);
 
   if (isFilmLoading) {
     return <Spinner />;
   }
 
   if (!film) {
-    // If loading finished but no film, it might be 404 or initial state
-    // Ideally we should handle 404 explicitly in reducer or here
-    // For now, if no film and not loading, we can redirect or show not found
-    // But since initial state is null, we need to be careful.
-    // Let's assume if id is present and not loading and film is null, it's an error/not found
     return id ? <Navigate to={AppRoute.Main} /> : <Spinner />;
   }
 

@@ -1,13 +1,19 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import FilmsList from '../../components/FilmsList/FilmsList';
 import GenreList from '../../components/GenreList/GenreList';
 import ShowMoreButton from '../../components/ShowMoreButton/ShowMoreButton';
 import { AppRoute, AuthorizationStatus } from '../../const';
-import { AppDispatch, RootState } from '../../store';
-import { getFilmsByGenre } from '../../store/utils';
+import { AppDispatch } from '../../store';
 import { logoutAction } from '../../store/action';
+import {
+  getGenre,
+  getHasError,
+  getAuthorizationStatus,
+  getUser,
+  getFilteredFilms
+} from '../../store/selectors';
 
 const FILMS_PER_STEP = 8;
 
@@ -19,12 +25,12 @@ type MainScreenProps = {
 
 function MainScreen({ promoFilmTitle, promoFilmGenre, promoFilmReleased }: MainScreenProps): JSX.Element {
   const dispatch = useDispatch<AppDispatch>();
-  const films = useSelector((state: RootState) => state.films);
-  const currentGenre = useSelector((state: RootState) => state.genre);
-  const hasError = useSelector((state: RootState) => state.hasError);
-  const authorizationStatus = useSelector((state: RootState) => state.authorizationStatus);
-  const user = useSelector((state: RootState) => state.user);
-  const filteredFilms = getFilmsByGenre(films, currentGenre);
+
+  const currentGenre = useSelector(getGenre);
+  const hasError = useSelector(getHasError);
+  const authorizationStatus = useSelector(getAuthorizationStatus);
+  const user = useSelector(getUser);
+  const filteredFilms = useSelector(getFilteredFilms);
 
   const [shownFilmsCount, setShownFilmsCount] = useState(FILMS_PER_STEP);
 
@@ -32,14 +38,14 @@ function MainScreen({ promoFilmTitle, promoFilmGenre, promoFilmReleased }: MainS
     setShownFilmsCount(FILMS_PER_STEP);
   }, [currentGenre]);
 
-  const handleShowMore = () => {
+  const handleShowMore = useCallback(() => {
     setShownFilmsCount((prevCount) => prevCount + FILMS_PER_STEP);
-  };
+  }, []);
 
-  const handleLogout = (evt: React.MouseEvent<HTMLAnchorElement>) => {
+  const handleLogout = useCallback((evt: React.MouseEvent<HTMLAnchorElement>) => {
     evt.preventDefault();
     dispatch(logoutAction());
-  };
+  }, [dispatch]);
 
   const filmsToShow = filteredFilms.slice(0, shownFilmsCount);
   const hasMoreFilms = shownFilmsCount < filteredFilms.length;
@@ -80,7 +86,7 @@ function MainScreen({ promoFilmTitle, promoFilmGenre, promoFilmReleased }: MainS
                   </div>
                 </li>
                 <li className="user-block__item">
-                  <a className="user-block__link" href="#" onClick={handleLogout}>Sign out</a>
+                  <Link className="user-block__link" to="/" onClick={handleLogout}>Sign out</Link>
                 </li>
               </>
             ) : (
@@ -127,7 +133,7 @@ function MainScreen({ promoFilmTitle, promoFilmGenre, promoFilmReleased }: MainS
         <section className="catalog">
           <h2 className="catalog__title visually-hidden">Catalog</h2>
 
-          <GenreList films={films} currentGenre={currentGenre} />
+          <GenreList films={filteredFilms} currentGenre={currentGenre} />
 
           <FilmsList films={filmsToShow} />
 

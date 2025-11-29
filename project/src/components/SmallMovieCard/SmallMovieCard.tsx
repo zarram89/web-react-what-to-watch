@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, memo } from 'react';
 import { Link } from 'react-router-dom';
 import { Film } from '../../types/film';
 import VideoPlayer from '../VideoPlayer/VideoPlayer';
@@ -44,4 +44,4 @@ function SmallMovieCard({ film }: SmallMovieCardProps): JSX.Element {
   );
 }
 
-export default SmallMovieCard;
+export default memo(SmallMovieCard);
