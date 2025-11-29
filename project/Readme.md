@@ -111,3 +111,18 @@ Created a new `VideoPlayer` component that uses the `<video>` element with `mute
 Updated `SmallMovieCard` to include hover logic using `useState` to track video playback state and `useRef` to store the hover timer. Implemented `onMouseEnter` handler that sets a 1-second timeout before starting video, and `onMouseLeave` handler that clears the timeout and stops playback.
 
 Simplified `FilmsList` by removing placeholder mouse handlers, as the hover logic is now self-contained within `SmallMovieCard`.
+
+## Task 6 (module5-task2): Tabs Component and Similar Films
+
+### Description
+Создать компонент «Табы» для отображения информации о фильме на трех вкладках: «Overview», «Details» и «Reviews». При клике на таб отображается соответствующий набор информации. Также реализовать блок «More like this» с четырьмя похожими фильмами (определяются по жанру).
+
+### Solution
+Создал три компонента для содержимого вкладок:
+- `TabOverview` - отображает рейтинг фильма с уровнем оценки (расчитывается на основе числового рейтинга), количество оценок, описание фильма, режиссера и актеров
+- `TabDetails` - отображает детальную информацию: режиссер, актеры (каждый с новой строки), длительность (форматируется как часы и минуты), жанр и год выпуска
+- `TabReviews` - placeholder для будущей реализации отзывов
+
+Создал основной компонент `Tabs`, который управляет состоянием активной вкладки с помощью `useState`, отрисовывает навигацию по вкладкам и отображает соответствующий контент в зависимости от выбранной вкладки. Использован enum `TabType` для типобезопасности.
+
+Обновил `MovieScreen`, заменив статичную разметку вкладок на компонент `Tabs`. Блок «More like this» уже был реализован ранее - он фильтрует фильмы по жанру и ограничивает вывод четырьмя фильмами с использованием компонента `FilmsList`.
